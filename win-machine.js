@@ -16,16 +16,17 @@ var WM = function (data) {
 	this.otherGroups = [];
 	this.countWinners = [];
 	this.slots = [];
+	this.slotHeight = 260;
 
 	this.construct = function(data) {
 		this.link = data.link;
-		
+
 		this.additionalGroups = (data['additional-groups']  === 'on');
 		this.withRepost = (data['with-repost']  === 'on');
-		this.countPrizes = 1; //parseInt(data['count-prizes']);
+		this.countPrizes = parseInt(data['count-prizes']);
 		this.countWinners = $.isArray(data['count-winners']) ? data['count-winners'] : [data['count-winners']];
 		this.otherGroups = $.isArray(data['other-group']) ? data['other-group'] : [data['other-group']];
-console.log(data);
+
 		var res = this.link.match(/wall((\-?\d+)_(\d+))/i);
 		if(res === null) {
 			alert('Неверная ссылка на конкурсный пост!');
@@ -121,11 +122,11 @@ console.log(data);
 		$.each(self.slices,function() {
 			$.merge(ids, this);
 		});
-		self.setStatus('Выбрали <b>' + ids.length + '</b> потенциальных победителей из <b>' + self.totalParticipants + '</b>. <br>Получаем дополнительную информацию...');
+		self.setStatus('Выбрали <b>' + ids.length + '</b> потенциальных победителей из <b>' + self.totalParticipants + '</b>. Получаем дополнительную информацию...');
 		
 		$.post(this.apiVK + "users.get", {
 				user_ids: ids.join(','),
-				fields: "photo_100"
+				fields: "photo_200"
 			},
 			function( data ) {
 				self.updateSlices(data.response);
@@ -138,7 +139,7 @@ console.log(data);
 	this.updateSlices = function(data) {
 		this.setStatus('Загружаем барабаны...');
 		var $img,
-			$target = $('.jack-result');
+			$target = $('.win-machine');
 
 		slicesIteration:
 		for (var i in data) {
@@ -146,17 +147,18 @@ console.log(data);
 				if(!this.slots[v]){
 					this.slots[v] = $('<div>', {
 						id:'slot-'+v
-					}).outerHeight(this.countWinners[v] * 110)
+					}).outerHeight(this.countWinners[v] * this.slotHeight)
 					  .addClass('slot').addClass('hidden');
 			  
 					this.slots[v].append('<div>');
 					$target.append(this.slots[v]);
+					console.log(this.slots[v]);
 				}
 
 				for (var k in this.slices[v]) {
 					if (this.slices[v][k]  === data[i].uid) {
-						if (data[i].photo_100) {
-							$img = $('<img>', {id:data[i].uid, src:data[i].photo_100});
+						if (data[i].photo_200) {
+							$img = $('<img>', {id:data[i].uid, src:data[i].photo_200});
 							this.slots[v].find('div').append($img);
 						}
 
@@ -171,11 +173,10 @@ console.log(data);
 	
 	//step 5
 	this.drawSlotMachine = function(){
-		this.setStatus('Дёргаем рычаг!');
+		this.setStatus('Начинаем вращение...');
 		
 		$('.slot').removeClass('hidden');
-		$('.loader').removeClass('hidden');
-		
+
 		var slots = [], 
 				i = 0,
 				self = this,
@@ -195,13 +196,17 @@ console.log(data);
 			
 			timeout = (Math.random() * 5 + 5) * 1000;
 			setTimeout(function(){
-				self.setStatus('Слот #' + currentSlot.i + ' вот-вот остановится...');
-				currentSlot.stop();
+				self.setStatus('Слот #' + (currentSlot.i + 1) + ' вот-вот остановится...');
+				currentSlot.stop(self.checkWinners());
 			}, timeout);
 			
 			i++;
 		});
 	};
+
+	this.checkWinners = function () {
+		this.setStatus('Проверяем победителей...');
+	}
 	
 	this.setStatus = function (text) {
 		text = text;
@@ -250,10 +255,14 @@ var Slot = function (el, max, step) {
 	this.speed = 0;
 	this.step = step;
 	this.isMoving = false;
-	this.isSlowing = false;
 	this.el = el;
 	this.maxSpeed = max;
 	this.minTop;
+
+	this.onStop = function(){
+		//on stop callback
+		return;
+	}
 
 	this.start = function() {
 		this.minTop = -1 * $(this.el).outerHeight(true) + $(this.el).parent().height();
@@ -270,44 +279,34 @@ var Slot = function (el, max, step) {
 		if(this.speed < this.maxSpeed) {
 			this.speed += this.step;
 		}
-		
-		if(this.speed > 100) $(this.el).addClass('motion');
 
 		var self = this,
 			$el = $(this.el),
 			marginTop = this.speed + parseInt($el.css('margin-top'));
 
-		if(marginTop > 0) marginTop = this.minTop;
+		if(marginTop >= 0) marginTop = this.minTop;
 
 		$el.animate({marginTop: marginTop}, 90, function(){
 			if(self.isMoving) { 
 				setTimeout(function(){self.move();},0); 
 			}
-
 		});
-
-
-
 	};
 
 	this.slow = function() {
 		if(this.speed > 0) {
 			this.speed -= this.step;
 		} else {
-			$('.loader').addClass('hidden');
+			this.onStop();
 			return;
 		}
-		
-		if(this.speed < 100) $(this.el).removeClass('motion');
 
 		var self = this,
 			$el = $(this.el),
 			marginTop = this.speed + parseInt($el.css('margin-top')),
-			remainder = marginTop % 102;
-	
+			remainder = marginTop % 160;
 		if(remainder) marginTop -= remainder;
-		if(marginTop > 0) marginTop = this.minTop;
-
+		if(marginTop >= 0) marginTop = this.minTop;
 		$el.animate({marginTop: marginTop}, 90, function(){
 			setTimeout(function(){self.slow();},0); 
 		});
@@ -316,8 +315,11 @@ var Slot = function (el, max, step) {
 
 	};
 
-	this.stop = function() {
+	this.stop = function(callback) {
 		this.isMoving = false;
+		if (callback) {
+			this.onStop = callback;
+		}
 		
 		this.slow();
 	};
