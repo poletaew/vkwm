@@ -1,0 +1,154 @@
+<!doctype html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.spritely/0.6.8/jquery.spritely.js"></script>
+
+	<link rel="stylesheet" href="./styles.css">
+	<!--<script src="./slot.js"></script>-->
+	<script src="win-machine.js"></script>
+	<script>
+		// do main action
+		$(document).ready(function () {
+
+			$('#additional-groups').click(function () {
+				var $gfHidden = $(".additional-group-form:hidden");
+				if ($gfHidden.length) {
+					$gfHidden.removeClass('hidden');
+				} else {
+					$gfHidden = $(".additional-group-form");
+					$gfHidden.find('input[name=other-group]').val('');
+					$($gfHidden).addClass('hidden');
+
+				}
+			});
+
+			/*
+			$('.cloneParentFormGroup').click(function () {
+				var $parent = $(this).parents('.form-group');
+				$parent.after($parent.clone(true));
+			});
+
+			$('.removeAdditionalGroup').click(function () {
+				var $parent = $(this).parents('.additional-group-form');
+
+				if ($('.additional-group-form').length > 1) $parent.remove();
+				else {
+					$('input[name=additional-groups]').click();
+				}
+			});
+			*/
+
+			$('#count-winners').change(function(){
+				var val = $(this).val(),
+					min = $(this).attr('min'),
+					max = $(this).attr('max');
+
+				if (val < min ){
+					val = min;
+					$(this).val(val);
+				}
+				else if (val > max) {
+					val = max;
+					$(this).val(val);
+				}
+
+				WM.setSlots(val);
+			});
+
+			$(document).on('click','.slot-hand',function () {
+				var $hand = $(this);
+
+				$hand.addClass('inverted');
+				setTimeout(function () {
+					$hand.removeClass('inverted');
+				}, 700);
+
+
+				$('.slot').remove(); //remove old slots
+
+				var data = getFormData($('.settings'));
+
+				new WM(data).run();
+			});
+
+			function getFormData($form) {
+				var unindexed_array = $form.serializeArray();
+				var indexed_array = {};
+
+				$.map(unindexed_array, function (n, i) {
+					if (!indexed_array[n['name']]) {
+						indexed_array[n['name']] = n['value'];
+					} else if ($.isArray(indexed_array[n['name']])) {
+						indexed_array[n['name']].push(n['value']);
+					} else {
+						indexed_array[n['name']] = [indexed_array[n['name']], n['value']];
+					}
+				});
+
+				return indexed_array;
+			}
+		});
+	</script>
+</head>
+<body>
+<div>
+	<div class="header">
+		<div class="logo"></div>
+		<form class="settings">
+			<b>Ссылка на конкурсный пост:</b>
+			<div class="input">
+				<input id="link" name="link" type="text" placeholder="Пример: https://vk.com/group?w=wall-223985_123"
+				       value="https://vk.com/m_tar?w=wall-22398598_1735"
+				>
+			</div>
+			<div class="mt15">
+				<div class="input inline">
+					<input id="count-winners" max="4" min="1" name="count-winners" type="number" value="1">
+				</div>
+				<b>Победителей</b>
+			</div>
+			<div>
+				<div class="checkbox">
+					<input type="checkbox" value="1" id="checkbox-like" checked disabled/>
+					<label for="checkbox-like"></label>
+				</div>
+				<b>Участник поставил "Мне нравится"</b>
+			</div>
+			<div>
+				<div class="checkbox">
+					<input type="checkbox" value="1" id="checkbox-repost" name="with-repost"/>
+					<label for="checkbox-repost"></label>
+				</div>
+				<b>Участник сделал репост</b>
+			</div>
+			<div>
+				<div class="checkbox">
+					<input type="checkbox" value="1" id="additional-groups" name="additional-groups"/>
+					<label for="additional-groups"></label>
+				</div>
+				<b>Также должен состоять в группе партнёра</b>
+			</div>
+			<div class="hidden additional-group-form mt15">
+				<div class="input">
+					<input class="other-group" name="other-group" type="text" placeholder="Ссылка на группу партнёра">
+				</div>
+				<!--<input type="button" class="cloneParentFormGroup" value="Добавить еще одну">
+				<input type="button" class="removeAdditionalGroup" value="Удалить">-->
+			</div>
+		</form>
+		<div class="info hidden">
+			<div class="status-text"></div>
+			<div class="old-statuses"></div>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+
+	<div class="win-machine">
+		<div class="slot-left"></div>
+		<div class="slot-mid"></div>
+		<div class="slot-right"></div>
+		<div class="slot-hand"></div>
+	</div>
+</div>
+</body>

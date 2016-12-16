@@ -1,0 +1,324 @@
+var WM = function (data) {
+	this.apiVK = "https://api.vk.com/method/";
+
+	this.link;
+	this.additionalGroups;
+	this.withRepost;
+	this.countPrizes;
+	
+	this.postId;
+	this.ownerId;
+	this.itemId;
+	this.totalParticipants;
+	
+	this.users = [];
+	this.slices = [];
+	this.otherGroups = [];
+	this.countWinners = [];
+	this.slots = [];
+
+	this.construct = function(data) {
+		this.link = data.link;
+		
+		this.additionalGroups = (data['additional-groups']  === 'on');
+		this.withRepost = (data['with-repost']  === 'on');
+		this.countPrizes = 1; //parseInt(data['count-prizes']);
+		this.countWinners = $.isArray(data['count-winners']) ? data['count-winners'] : [data['count-winners']];
+		this.otherGroups = $.isArray(data['other-group']) ? data['other-group'] : [data['other-group']];
+console.log(data);
+		var res = this.link.match(/wall((\-?\d+)_(\d+))/i);
+		if(res === null) {
+			alert('Неверная ссылка на конкурсный пост!');
+			throw new Error('Bad link');
+		}
+		else {
+			this.postId = res[1];
+			this.ownerId = res[2];
+			this.itemId = res[3];
+		}
+	};
+
+	this.construct(data);
+	
+	this.run = function () {
+		this.getUsers(0, this.getSlices);
+	};
+	
+	
+	//step 1
+	this.getUsers = function (offset, callbackFunction) {
+		this.setStatus('Считаем участников...');
+		var count = 1000,
+			filter = this.withRepost ? 'copies' : 'likes',
+			self = this;
+
+		if(!offset) offset = 0;
+
+		$.get(this.apiVK + "likes.getList", {
+				type: "post",
+				skip_own: true,
+				filter : filter,
+				owner_id : this.ownerId,
+				item_id :  this.itemId,
+				count: count,
+				offset: offset
+				
+			},
+			function( data ) {
+				if (!self.users) self.users = data.response.users;
+				else $.merge(self.users, data.response.users);
+				var step = offset + count;
+				
+				if(!self.totalParticipants) self.totalParticipants = data.response.count;
+
+				if(self.totalParticipants > step) {
+					self.getUsers(step * (Math.PI/2), callbackFunction);
+				} else {
+					callbackFunction(self);
+				}
+			}, 
+			"jsonp"
+		);
+
+		return this;
+	};
+	
+	//step 2
+	this.getSlices = function (self) {
+		self.setStatus('Участников: <b>' + self.totalParticipants + '</b>. Делаем рандомные выборки из общего числа...');
+
+		var key = 0,
+			summOfWinners = 0,
+			maxRatio = 50;
+		
+		//calc slice ratio
+		$.each(self.countWinners,function() {
+			summOfWinners += parseInt(this);
+		});
+		var ratio = Math.floor(self.users.length / summOfWinners);
+		
+		if (ratio > maxRatio) ratio = maxRatio;
+		else if (ratio < 1) ratio = 1;
+
+		for (var i=0; i<self.countPrizes; i++) {
+			for (var j=0; j<self.countWinners[i] * ratio; j++){
+				key = parseInt(Math.random() * self.users.length - 1);
+				if(!self.slices[i]) self.slices[i] = [];
+				
+				self.slices[i].push(self.users[key]);
+				self.users.splice(key,1);
+			}
+		}
+		
+		//next step
+		self.getUsersInfo(self);
+	};
+	
+	//step 3
+	this.getUsersInfo = function(self) {
+		var ids = [];
+
+		$.each(self.slices,function() {
+			$.merge(ids, this);
+		});
+		self.setStatus('Выбрали <b>' + ids.length + '</b> потенциальных победителей из <b>' + self.totalParticipants + '</b>. <br>Получаем дополнительную информацию...');
+		
+		$.post(this.apiVK + "users.get", {
+				user_ids: ids.join(','),
+				fields: "photo_100"
+			},
+			function( data ) {
+				self.updateSlices(data.response);
+			}, 
+			"jsonp"
+		);
+	};
+	
+	//step 4
+	this.updateSlices = function(data) {
+		this.setStatus('Загружаем барабаны...');
+		var $img,
+			$target = $('.jack-result');
+
+		slicesIteration:
+		for (var i in data) {
+			for (var v in this.slices) {
+				if(!this.slots[v]){
+					this.slots[v] = $('<div>', {
+						id:'slot-'+v
+					}).outerHeight(this.countWinners[v] * 110)
+					  .addClass('slot').addClass('hidden');
+			  
+					this.slots[v].append('<div>');
+					$target.append(this.slots[v]);
+				}
+
+				for (var k in this.slices[v]) {
+					if (this.slices[v][k]  === data[i].uid) {
+						if (data[i].photo_100) {
+							$img = $('<img>', {id:data[i].uid, src:data[i].photo_100});
+							this.slots[v].find('div').append($img);
+						}
+
+						continue slicesIteration;
+					}
+				}
+			}
+		}
+		
+		this.drawSlotMachine();
+	}; 
+	
+	//step 5
+	this.drawSlotMachine = function(){
+		this.setStatus('Дёргаем рычаг!');
+		
+		$('.slot').removeClass('hidden');
+		$('.loader').removeClass('hidden');
+		
+		var slots = [], 
+				i = 0,
+				self = this,
+				timeout = 0;
+		
+		$('.slot').each(function(){
+			slots[i] = new Slot(
+				$(this).find('div'), 
+				parseInt(Math.random()*150 + 100), 
+				parseInt(Math.random()*10 + 1)
+			);
+				
+			var currentSlot = slots[i];
+			currentSlot.i = i;
+
+			currentSlot.start();
+			
+			timeout = (Math.random() * 5 + 5) * 1000;
+			setTimeout(function(){
+				self.setStatus('Слот #' + currentSlot.i + ' вот-вот остановится...');
+				currentSlot.stop();
+			}, timeout);
+			
+			i++;
+		});
+	};
+	
+	this.setStatus = function (text) {
+		text = text;
+		$('.info:hidden').removeClass('hidden');
+
+		if ($('.status-text').text()) {
+			$('.old-statuses').prepend($('<div>', {html: '[WM] ' + $('.status-text').html()}));
+		}
+
+
+		$('.status-text').html(text);
+		console.info('[WM] ' + $('.status-text').text());
+	};
+};
+
+WM.setSlots = function (numberOfSlots) {
+	var $machine = $('.win-machine');
+
+	$machine.find('div').remove();
+
+	$machine.append($('<div>', {class:'slot-left'}));
+
+
+	for (var i=1; i<=numberOfSlots; i++) {
+		if (i > 1) {
+			$('.win-machine').append($('<div>', {class:'slot-connector'}));
+		}
+		$machine.append($('<div>', {class:'slot-mid'}));
+	}
+
+	$machine.append([
+		$('<div>', {class:'slot-right'}),
+		$('<div>', {class:'slot-hand'})
+	]);
+
+	var neWidth = 0;
+	$machine.find('div').each(function(){
+		neWidth += $(this).outerWidth();
+	})
+
+	$machine.width(neWidth);
+}
+
+
+var Slot = function (el, max, step) {
+	this.speed = 0;
+	this.step = step;
+	this.isMoving = false;
+	this.isSlowing = false;
+	this.el = el;
+	this.maxSpeed = max;
+	this.minTop;
+
+	this.start = function() {
+		this.minTop = -1 * $(this.el).outerHeight(true) + $(this.el).parent().height();
+
+		$(this.el).css('marginTop', this.minTop);
+		this.isMoving = true;
+
+		this.move();
+
+
+	};
+
+	this.move = function() {
+		if(this.speed < this.maxSpeed) {
+			this.speed += this.step;
+		}
+		
+		if(this.speed > 100) $(this.el).addClass('motion');
+
+		var self = this,
+			$el = $(this.el),
+			marginTop = this.speed + parseInt($el.css('margin-top'));
+
+		if(marginTop > 0) marginTop = this.minTop;
+
+		$el.animate({marginTop: marginTop}, 90, function(){
+			if(self.isMoving) { 
+				setTimeout(function(){self.move();},0); 
+			}
+
+		});
+
+
+
+	};
+
+	this.slow = function() {
+		if(this.speed > 0) {
+			this.speed -= this.step;
+		} else {
+			$('.loader').addClass('hidden');
+			return;
+		}
+		
+		if(this.speed < 100) $(this.el).removeClass('motion');
+
+		var self = this,
+			$el = $(this.el),
+			marginTop = this.speed + parseInt($el.css('margin-top')),
+			remainder = marginTop % 102;
+	
+		if(remainder) marginTop -= remainder;
+		if(marginTop > 0) marginTop = this.minTop;
+
+		$el.animate({marginTop: marginTop}, 90, function(){
+			setTimeout(function(){self.slow();},0); 
+		});
+
+
+
+	};
+
+	this.stop = function() {
+		this.isMoving = false;
+		
+		this.slow();
+	};
+}
