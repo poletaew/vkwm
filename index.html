@@ -1,5 +1,6 @@
 <!doctype html>
 <head>
+	<!-- <script src="https://vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script> -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.spritely/0.6.8/jquery.spritely.js"></script>
 
@@ -9,6 +10,9 @@
 	<script>
 		// do main action
 		$(document).ready(function () {
+//			VK.init(function(){
+//				console.log('init!');
+//			});
 
 			$('#additional-groups').click(function () {
 				var $gfHidden = $(".additional-group-form:hidden");
@@ -90,23 +94,29 @@
 				new WM(data).run();
 			});
 
-			function getFormData($form) {
-				var unindexed_array = $form.serializeArray();
-				var indexed_array = {};
-
-				$.map(unindexed_array, function (n, i) {
-					if (!indexed_array[n['name']]) {
-						indexed_array[n['name']] = n['value'];
-					} else if ($.isArray(indexed_array[n['name']])) {
-						indexed_array[n['name']].push(n['value']);
-					} else {
-						indexed_array[n['name']] = [indexed_array[n['name']], n['value']];
-					}
-				});
-
-				return indexed_array;
-			}
+			$(document).on('click', '.info > .close', function(){
+				$('.info').addClass('hidden');
+				$('.info > .status-text').text('');
+				$('.info > .old-statuses').text('');
+			});
 		});
+
+		function getFormData($form) {
+			var unindexed_array = $form.serializeArray();
+			var indexed_array = {};
+
+			$.map(unindexed_array, function (n, i) {
+				if (!indexed_array[n['name']]) {
+					indexed_array[n['name']] = n['value'];
+				} else if ($.isArray(indexed_array[n['name']])) {
+					indexed_array[n['name']].push(n['value']);
+				} else {
+					indexed_array[n['name']] = [indexed_array[n['name']], n['value']];
+				}
+			});
+
+			return indexed_array;
+		}
 	</script>
 </head>
 <body>
@@ -128,28 +138,28 @@
 			</div>
 			<div>
 				<div class="checkbox">
-					<input type="checkbox" value="1" id="checkbox-like" checked disabled/>
+					<input type="checkbox" value="on" id="checkbox-like" checked disabled/>
 					<label for="checkbox-like"></label>
 				</div>
 				<b>Участник поставил "Мне нравится"</b>
 			</div>
 			<div>
 				<div class="checkbox">
-					<input type="checkbox" value="1" id="checkbox-repost" name="with-repost"/>
+					<input type="checkbox" value="on" id="checkbox-repost" name="with-repost"/>
 					<label for="checkbox-repost"></label>
 				</div>
 				<b>Участник сделал репост</b>
 			</div>
 			<div>
 				<div class="checkbox">
-					<input type="checkbox" value="1" id="additional-groups" name="additional-groups"/>
+					<input type="checkbox" value="on" id="additional-groups" name="additional-groups"/>
 					<label for="additional-groups"></label>
 				</div>
-				<b>Также должен состоять в группе партнёра</b>
+				<b>Также должен состоять в группе</b>
 			</div>
 			<div class="hidden additional-group-form mt15">
 				<div class="input">
-					<input class="other-group" name="other-group" type="text" placeholder="Ссылка на группу партнёра">
+					<input class="other-group" name="other-group" type="text" placeholder="Ссылка на группу">
 				</div>
 				<!--<input type="button" class="cloneParentFormGroup" value="Добавить еще одну">
 				<input type="button" class="removeAdditionalGroup" value="Удалить">-->
@@ -157,6 +167,7 @@
 			<input type="hidden" name="count-winners" class="count-winners" value="1">
 		</form>
 		<div class="info hidden">
+			<div class="close"></div>
 			<div class="status-text"></div>
 			<div class="old-statuses"></div>
 		</div>
