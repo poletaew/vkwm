@@ -38,7 +38,7 @@ body > div {
 }
 
 .settings {
-	width: 410px;
+	width: 390px;
 	margin: 15px;
 	float: left;
 }
@@ -148,7 +148,7 @@ input[type=checkbox]:checked + label:after {
 /* end .checkbox */
 
 .additional-group-form {
-	width: 350px;
+	width: 327px;
 	margin: -40px 0 0 61px;
 	position: absolute;
 }
