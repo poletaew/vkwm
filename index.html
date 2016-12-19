@@ -10,9 +10,15 @@
 	<script>
 		// do main action
 		$(document).ready(function () {
-			VK.init(function(){
-				console.log('init VK!');
-			});
+			try {
+				VK.init(function(){
+					window.useSDK = true;
+				});
+			}
+			catch (e) {
+				console.warn('Working without VK API');
+			}
+
 
 			$('#additional-groups').click(function () {
 				var $gfHidden = $(".additional-group-form:hidden");

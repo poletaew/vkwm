@@ -60,7 +60,7 @@ var WM = function (data) {
 
 		if(!offset) offset = 0;
 
-		$.get(this.apiVK + "likes.getList", {
+		var params = {
 				type: "post",
 				skip_own: true,
 				filter : filter,
@@ -68,13 +68,13 @@ var WM = function (data) {
 				item_id :  this.itemId,
 				count: count,
 				offset: offset
-				
+
 			},
-			function( data ) {
+			getListCallback = function( data ) {
 				if (!self.users) self.users = data.response.users;
 				else $.merge(self.users, data.response.users);
 				var step = offset + count;
-				
+
 				if(!self.totalParticipants) self.totalParticipants = data.response.count;
 
 				if(self.totalParticipants > step) {
@@ -82,9 +82,16 @@ var WM = function (data) {
 				} else {
 					callbackFunction(self);
 				}
-			}, 
-			"jsonp"
-		);
+			}
+		;
+
+		if (window.useSDK) {
+			console.log('use VK.api for groups.get');
+			VK.api("likes.getList", params, getListCallback);
+		}
+		else {
+			$.get(this.apiVK + "likes.getList", params, getListCallback,"jsonp");
+		}
 
 		return this;
 	};
@@ -128,16 +135,28 @@ var WM = function (data) {
 			$.merge(ids, this);
 		});
 		self.setStatus('Выбрали <b>' + ids.length + '</b> потенциальных победителей из <b>' + self.totalParticipants + '</b>. Получаем дополнительную информацию...');
-		
-		$.post(this.apiVK + "users.get", {
+
+		if (window.useSDK) {
+			console.log('use VK.api');
+
+			VK.api("users.get", {
 				user_ids: ids.join(','),
 				fields: "photo_200,screen_name"
-			},
-			function( data ) {
+			}, function (data) {
 				self.updateSlices(data.response);
-			}, 
-			"jsonp"
-		);
+			});
+		}
+		else {
+			$.post(this.apiVK + "users.get", {
+					user_ids: ids.join(','),
+					fields: "photo_200,screen_name"
+				},
+				function( data ) {
+					self.updateSlices(data.response);
+				},
+				"jsonp"
+			);
+		}
 	};
 	
 	//step 4
@@ -307,32 +326,41 @@ var WM = function (data) {
 
 		$img.after($winnerWaiting);
 
-		$.get(this.apiVK + "groups.get", {user_id: id},
-			function( data ) {
-				if (data.response && data.response.items) {
-					var groups = data.response.items || [];
+		var callback = function( data ) {
+			if (data.response && data.response.items) {
+				var groups = data.response.items || [];
 
-					for (var i in groups) {
-						if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
-							foundGroups.push(groups[i].screen_name);
-						}
+				for (var i in groups) {
+					if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
+						foundGroups.push(groups[i].screen_name);
 					}
-
-					$winnerWaiting.remove();
 				}
 
-				if (foundGroups.length != neededGroups.length) {
-					self.setStatus('<span class="red">Победитель # ' + slotNumber + ' отклонён, причина: <b>не в группе</b></span>');
-					$winnerWaiting.removeClass('waiting').addClass('rejected')
-				}
-				else {
-					$winnerWaiting.remove();
-					self.setWinner($img, slotNumber);
-				}
+				$winnerWaiting.remove();
+			}
 
-			},
-			"jsonp"
-		);
+			if (foundGroups.length != neededGroups.length) {
+				self.setStatus('<span class="red">Победитель # ' + slotNumber + ' отклонён, причина: <b>не в группе</b></span>');
+				$winnerWaiting.removeClass('waiting').addClass('rejected')
+			}
+			else {
+				$winnerWaiting.remove();
+				self.setWinner($img, slotNumber);
+			}
+
+		}
+
+		if (window.useSDK) {
+			console.log('use VK.api for groups.get');
+
+			VK.api("groups.get", {user_id: id}, callback);
+		}
+		else {
+			$.get(this.apiVK + "groups.get", {user_id: id},
+				callback,
+				"jsonp"
+			);
+		}
 	}
 
 	this.setStatus = function (text) {
