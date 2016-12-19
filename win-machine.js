@@ -326,35 +326,36 @@ var WM = function (data) {
 
 		$img.after($winnerWaiting);
 
-		var callback = function( data ) {
-			console.log('data', data);
-			if (data.response && data.response.items) {
-				var groups = data.response.items || [];
+		var params = {user_id: id, extended:true},
+			callback = function( data ) {
+				if (data.response && data.response.items) {
+					var groups = data.response.items || [];
 
-				for (var i in groups) {
-					if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
-						foundGroups.push(groups[i].screen_name);
+					for (var i in groups) {
+						if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
+							foundGroups.push(groups[i].screen_name);
+						}
 					}
+
+					$winnerWaiting.remove();
 				}
 
-				$winnerWaiting.remove();
-			}
+				if (foundGroups.length != neededGroups.length) {
+					self.setStatus('<span class="red">Победитель # ' + slotNumber + ' отклонён, причина: <b>не в группе</b></span>');
+					$winnerWaiting.removeClass('waiting').addClass('rejected')
+				}
+				else {
+					$winnerWaiting.remove();
+					self.setWinner($img, slotNumber);
+				}
 
-			if (foundGroups.length != neededGroups.length) {
-				self.setStatus('<span class="red">Победитель # ' + slotNumber + ' отклонён, причина: <b>не в группе</b></span>');
-				$winnerWaiting.removeClass('waiting').addClass('rejected')
 			}
-			else {
-				$winnerWaiting.remove();
-				self.setWinner($img, slotNumber);
-			}
-
-		}
+		;
 
 		if (window.useSDK) {
 			console.log('use VK.api for groups.get');
 
-			VK.api("groups.get", {user_id: id}, callback);
+			VK.api("groups.get", params, callback);
 		}
 		else {
 			$.get(this.apiVK + "groups.get", {user_id: id},
