@@ -340,6 +340,7 @@ var WM = function (data) {
 					$winnerWaiting.removeClass('waiting').addClass('rejected')
 				}
 				else {
+					self.setStatus('Победитель # ' + slotNumber + ' состоит в указанной группе');
 					$winnerWaiting.remove();
 					self.setWinner($img, slotNumber);
 				}
