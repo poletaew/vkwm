@@ -86,7 +86,6 @@ var WM = function (data) {
 		;
 
 		if (window.useSDK) {
-			console.log('use VK.api for groups.get');
 			VK.api("likes.getList", params, getListCallback);
 		}
 		else {
@@ -137,8 +136,6 @@ var WM = function (data) {
 		self.setStatus('Выбрали <b>' + ids.length + '</b> потенциальных победителей из <b>' + self.totalParticipants + '</b>. Получаем дополнительную информацию...');
 
 		if (window.useSDK) {
-			console.log('use VK.api');
-
 			VK.api("users.get", {
 				user_ids: ids.join(','),
 				fields: "photo_200,screen_name"
@@ -327,7 +324,8 @@ var WM = function (data) {
 		$img.after($winnerWaiting);
 
 		var params = {user_id: id, extended:true},
-			callback = function( data ) {
+			groupsGetCallback = function( data ) {
+				console.log('data', data);
 				if (data.response && data.response.items) {
 					var groups = data.response.items || [];
 
@@ -339,7 +337,7 @@ var WM = function (data) {
 
 					$winnerWaiting.remove();
 				}
-
+console.log('found', foundGroups, 'needed', neededGroups);
 				if (foundGroups.length != neededGroups.length) {
 					self.setStatus('<span class="red">Победитель # ' + slotNumber + ' отклонён, причина: <b>не в группе</b></span>');
 					$winnerWaiting.removeClass('waiting').addClass('rejected')
@@ -353,13 +351,11 @@ var WM = function (data) {
 		;
 
 		if (window.useSDK) {
-			console.log('use VK.api for groups.get');
-
-			VK.api("groups.get", params, callback);
+			VK.api("groups.get", params, groupsGetCallback);
 		}
 		else {
 			$.get(this.apiVK + "groups.get", {user_id: id},
-				callback,
+				groupsGetCallback,
 				"jsonp"
 			);
 		}
