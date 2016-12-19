@@ -280,7 +280,7 @@ var WM = function (data) {
 			clearTimeout(this.finalTimer);
 		}
 
-		var $winners = $('.win-machine').find('.winner').not('.waiting'),
+		var $winners = $('.win-machine').find('.winner').not('.waiting').not('.rejected'),
 			totalWinners = 0;
 
 		for (var i in this.countWinners) {
