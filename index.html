@@ -1,6 +1,6 @@
 <!doctype html>
 <head>
-	<script src="https://vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
+	<script src="https://vk.com/js/api/xd_connection.js?2" type="text/javascript"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.spritely/0.6.8/jquery.spritely.js"></script>
 
@@ -11,7 +11,7 @@
 		// do main action
 		$(document).ready(function () {
 			try {
-				VK.init(function(){
+				VK.init(function () {
 					window.useSDK = true;
 				});
 			}
@@ -33,27 +33,27 @@
 			});
 
 			/*
-			$('.cloneParentFormGroup').click(function () {
-				var $parent = $(this).parents('.form-group');
-				$parent.after($parent.clone(true));
-			});
+			 $('.cloneParentFormGroup').click(function () {
+			 var $parent = $(this).parents('.form-group');
+			 $parent.after($parent.clone(true));
+			 });
 
-			$('.removeAdditionalGroup').click(function () {
-				var $parent = $(this).parents('.additional-group-form');
+			 $('.removeAdditionalGroup').click(function () {
+			 var $parent = $(this).parents('.additional-group-form');
 
-				if ($('.additional-group-form').length > 1) $parent.remove();
-				else {
-					$('input[name=additional-groups]').click();
-				}
-			});
-			*/
+			 if ($('.additional-group-form').length > 1) $parent.remove();
+			 else {
+			 $('input[name=additional-groups]').click();
+			 }
+			 });
+			 */
 
-			$('#count-prizes').change(function(){
+			$('#count-prizes').change(function () {
 				var val = $(this).val(),
 					min = $(this).attr('min'),
 					max = $(this).attr('max');
 
-				if (val < min ){
+				if (val < min) {
 					val = min;
 					$(this).val(val);
 				}
@@ -72,19 +72,19 @@
 
 				WM.setSlots(val);
 
-				for (var i = 1; i<=val; i++) {
+				for (var i = 1; i <= val; i++) {
 					$('form.settings').append($('<input>',
 						{
-							type:'hidden',
-							name:'count-winners',
-							class:'count-winners',
-							value:1
+							type: 'hidden',
+							name: 'count-winners',
+							class: 'count-winners',
+							value: 1
 						}
 					));
 				}
 			});
 
-			$(document).on('click','.slot-hand',function () {
+			$(document).on('click', '.slot-hand', function () {
 				var $hand = $(this);
 
 				$hand.addClass('inverted');
@@ -100,7 +100,7 @@
 				new WM(data).run();
 			});
 
-			$(document).on('click', '.info > .close', function(){
+			$(document).on('click', '.info > .close', function () {
 				$('.info').addClass('hidden');
 				$('.info > .status-text').text('');
 				$('.info > .old-statuses').text('');
