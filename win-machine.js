@@ -312,6 +312,7 @@ var WM = function (data) {
 
 	this.checkWinnerGroup = function ($img, slotNumber) {
 		var id = $img.attr('id'),
+			userInfo = $img.data(),
 			$winnerWaiting = $('<div>').addClass('winner waiting'),
 			neededGroups = [],
 			foundGroups = [];
@@ -336,7 +337,9 @@ var WM = function (data) {
 				}
 
 				if (foundGroups.length != neededGroups.length) {
-					self.setStatus('<span class="red">Победитель # ' + slotNumber + ' отклонён, причина: <b>не в группе</b></span>');
+					self.setStatus('<span class="red">Победитель # ' + slotNumber
+						+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
+						+ '</a>) отклонён, причина: <b>не в группе</b></span>');
 					$winnerWaiting.removeClass('waiting').addClass('rejected')
 				}
 				else {
