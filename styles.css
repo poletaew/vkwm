@@ -10,7 +10,8 @@ body {
 
 body > div {
 	background-image: url("./img/back.jpg");
-	max-width: 1024px;
+	background-size: cover;
+	max-width: 1000px;
 	max-height: 813px;
 	overflow: hidden;
 	margin: 0 auto;
@@ -37,7 +38,7 @@ body > div {
 }
 
 .settings {
-	width: 430px;
+	width: 410px;
 	margin: 15px;
 	float: left;
 }
@@ -147,7 +148,7 @@ input[type=checkbox]:checked + label:after {
 /* end .checkbox */
 
 .additional-group-form {
-	width: 370px;
+	width: 350px;
 	margin: -40px 0 0 61px;
 	position: absolute;
 }
