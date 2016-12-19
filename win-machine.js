@@ -326,10 +326,11 @@ var WM = function (data) {
 		var params = {user_id: id, extended:true},
 			groupsGetCallback = function( data ) {
 				console.log('data', data);
-				if (data.response && data.response.items) {
-					var groups = data.response.items || [];
+				if (data.response && data.response) {
+					var groups = data.response || [];
 
 					for (var i in groups) {
+						console.log('group', groups[i].screen_name);
 						if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
 							foundGroups.push(groups[i].screen_name);
 						}
