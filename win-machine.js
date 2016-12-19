@@ -327,6 +327,7 @@ var WM = function (data) {
 		$img.after($winnerWaiting);
 
 		var callback = function( data ) {
+			console.log('data', data);
 			if (data.response && data.response.items) {
 				var groups = data.response.items || [];
 
