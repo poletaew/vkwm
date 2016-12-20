@@ -93,7 +93,7 @@
 				}, 700);
 
 
-				$('.slot').remove(); //remove old slots
+				$('.slot > div').remove(); //remove old slots' contents
 
 				var data = getFormData($('.settings'));
 
@@ -186,6 +186,7 @@
 		<div class="slot-mid"></div>
 		<div class="slot-right"></div>
 		<div class="slot-hand"></div>
+		<div id="slot-0" class="slot"></div>
 	</div>
 </div>
 </body>

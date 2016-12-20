@@ -166,11 +166,17 @@ var WM = function (data) {
 			for (var i in data) {
 				for (var v in this.slices) {
 					if (!this.slots[v]) {
-						this.slots[v] = $('<div>', {
-							id: 'slot-' + v,
-							style: 'margin-left:' + (v * 156 + 20) + 'px'
-						}).outerHeight(this.countWinners[v] * this.slotHeight)
-							.addClass('slot').addClass('hidden');
+						this.slots[v] = $('div#' + 'slot-' + v);
+
+						if (!this.slots[v].length) {
+							this.slots[v] = $('<div>', {
+								id: 'slot-' + v,
+								style: 'margin-left:' + (v * 156 + 20) + 'px'
+							});
+						}
+
+						this.slots[v].outerHeight(this.countWinners[v] * this.slotHeight)
+							.addClass('hidden');
 
 						this.slots[v].append('<div>');
 						$target.append(this.slots[v]);
@@ -378,7 +384,8 @@ var WM = function (data) {
 };
 
 WM.setSlots = function (numberOfSlots) {
-	var $machine = $('.win-machine');
+	var $machine = $('.win-machine'),
+		slots = [];
 
 	$machine.find('div').remove();
 
@@ -390,15 +397,22 @@ WM.setSlots = function (numberOfSlots) {
 			$('.win-machine').append($('<div>', {class: 'slot-connector'}));
 		}
 		$machine.append($('<div>', {class: 'slot-mid'}));
+		slots.push($('<div>', {
+			id:'slot-' + (i - 1),
+			style: 'margin-left:' + ((i - 1) * 156 + 20) + 'px',
+			class:'slot'
+		}))
 	}
 
 	$machine.append([
 		$('<div>', {class: 'slot-right'}),
 		$('<div>', {class: 'slot-hand'})
 	]);
+	$machine.append(slots);
+
 
 	var neWidth = 0;
-	$machine.find('div').each(function () {
+	$machine.find('div').not('.slot').each(function () {
 		neWidth += $(this).outerWidth();
 	})
 

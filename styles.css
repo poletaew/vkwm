@@ -219,12 +219,26 @@ input[type=checkbox]:checked + label:after {
 
 .slot {
 	margin-top: -295px;
-	margin-left: 16px;
+	margin-left: 20px;
 	float: left;
 	width: 150px;
 	height: 260px;
 	overflow: hidden;
-	background-color: white;
+}
+.slot:before {
+	content: '';
+	display: block;
+	position: relative;
+	background: white url(./img/question-mark.png) repeat-y center -7px;
+	background-size: 90%;
+	opacity: 0.2;
+	width: 150px;
+	height: 260px;
+	z-index: 0;
+}
+.slot > div {
+	position: relative;
+	z-index: 1;
 }
 
 .slot-hand {
@@ -289,7 +303,6 @@ input[type=checkbox]:checked + label:after {
 .slot > div > img {
 	width: 150px;
 	height: 150px;
-	margin: 2px;
 	display: block;
 	box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.8);
 }
@@ -302,7 +315,7 @@ input[type=checkbox]:checked + label:after {
 	box-shadow: inset 0 0 50px 15px rgba(255, 199, 0, 0.85);
 	width: 150px;
 	height: 150px;
-	margin-top: -152px;
+	margin-top: -150px;
 }
 
 .winner:before {
