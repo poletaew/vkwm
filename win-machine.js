@@ -83,14 +83,9 @@ var WM = function (data) {
 					callbackFunction(self);
 				}
 			}
-			;
+		;
 
-		if (window.useSDK) {
-			VK.api("likes.getList", params, getListCallback);
-		}
-		else {
-			$.get(this.apiVK + "likes.getList", params, getListCallback, "jsonp");
-		}
+		this.apiCall("likes.getList", params, getListCallback);
 
 		return this;
 	};
@@ -135,25 +130,12 @@ var WM = function (data) {
 		});
 		self.setStatus('Выбрали <b>' + ids.length + '</b> потенциальных победителей из <b>' + self.totalParticipants + '</b>. Получаем дополнительную информацию...');
 
-		if (window.useSDK) {
-			VK.api("users.get", {
-				user_ids: ids.join(','),
-				fields: "photo_200,screen_name"
-			}, function (data) {
-				self.updateSlices(data.response);
-			});
-		}
-		else {
-			$.post(this.apiVK + "users.get", {
-					user_ids: ids.join(','),
-					fields: "photo_200,screen_name"
-				},
-				function (data) {
-					self.updateSlices(data.response);
-				},
-				"jsonp"
-			);
-		}
+		self.apiCall("users.get", {
+			user_ids: ids.join(','),
+			fields: "photo_200,screen_name"
+		}, function (data) {
+			self.updateSlices(data.response);
+		});
 	};
 
 	//step 4
@@ -318,11 +300,9 @@ var WM = function (data) {
 	}
 
 	this.checkWinnerGroup = function ($img, slotNumber) {
-		var id = $img.attr('id'),
-			userInfo = $img.data(),
-			$winnerWaiting = $('<div>').addClass('winner waiting'),
-			neededGroups = [],
-			foundGroups = [];
+		var $winnerWaiting = $('<div>').addClass('winner waiting'),
+			neededGroups = []
+			;
 
 		for (var i in this.otherGroups) {
 			var tmp = this.otherGroups[i].match(/vk.com\/([^?]+)\??.*$/);
@@ -331,56 +311,90 @@ var WM = function (data) {
 
 		$img.after($winnerWaiting);
 
-		var params = {
-			user_id: id,
-			extended: true
-		},
-			groupsGetCallback = function (data) {
-
-				if (data.response && data.response) {
-					var groups = data.response || [];
-
-					for (var i in groups) {
-						if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
-							foundGroups.push(groups[i].screen_name);
-						}
-					}
-
-					if (foundGroups.length != neededGroups.length) {
-						self.setStatus('<span class="red">Победитель # ' + slotNumber
-							+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
-							+ '</a>) отклонён, причина: <b>не в группе</b></span>');
-
-						$winnerWaiting.removeClass('waiting').addClass('rejected');
-					}
-					else {
-						self.setStatus('Победитель # ' + slotNumber + ' состоит в указанной группе');
-						$winnerWaiting.remove();
-						self.setWinner($img, slotNumber);
-					}
-
-				}
-				else if (data.error) {
-					self.setStatus('<span class="red">Победитель # ' + slotNumber
-						+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
-						+ '</a>) отклонён, причина: <b>пользователь запретил просматривать свои группы</b></span>');
-
-					$winnerWaiting.removeClass('waiting').addClass('rejected');
-				}
-
-
-
-			}
-			;
-
-		if (window.useSDK) {
-			VK.api("groups.get", params, groupsGetCallback);
+		if (neededGroups.length > 1) {
+			this.checkMultiGroupsMembership($winnerWaiting, $img, neededGroups);
 		}
 		else {
-			$.get(this.apiVK + "groups.get", {user_id: id},
-				groupsGetCallback,
-				"jsonp"
-			);
+			this.checkMembership($winnerWaiting, $img, neededGroups[0], slotNumber);
+		}
+	}
+
+	this.checkMembership = function ($object, $img, neededGroup, slotNumber) {
+		var id = $img.attr('id'),
+			userInfo = $img.data();
+
+		this.apiCall("groups.isMember", {
+				group_id: neededGroup,
+				user_id: id
+			},
+			function (data) {
+				if (data.response == 0) {
+					self.setStatus('<span class="red">Победитель # ' + slotNumber
+						+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
+						+ '</a>) отклонён, причина: <b>не в группе</b></span>');
+
+					$object.removeClass('waiting').addClass('rejected');
+				}
+				else if (data.response == 1) {
+					self.setStatus('Победитель # ' + slotNumber + ' состоит в указанной группе');
+					$object.remove();
+					self.setWinner($img, slotNumber);
+				}
+			}
+		);
+	}
+
+	this.checkMultiGroupsMembership = function ($object, $img, neededGroups, slotNumber) {
+		var foundGroups = [],
+			id = $img.attr('id'),
+			userInfo = $img.data();
+
+		this.apiCall("groups.get", {
+				user_id: id,
+				extended: true
+			},
+			function (data) {
+
+			if (data.response) {
+				var groups = data.response;
+
+				for (var i in groups) {
+					if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
+						foundGroups.push(groups[i].screen_name);
+					}
+				}
+
+				if (foundGroups.length != neededGroups.length) {
+					self.setStatus('<span class="red">Победитель # ' + slotNumber
+						+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
+						+ '</a>) отклонён, причина: <b>не в группе</b></span>');
+
+					$object.removeClass('waiting').addClass('rejected');
+				}
+				else {
+					self.setStatus('Победитель # ' + slotNumber + ' состоит в указанной группе');
+					$object.remove();
+					self.setWinner($img, slotNumber);
+				}
+
+			}
+			else if (data.error) {
+				self.setStatus('<span class="red">Победитель # ' + slotNumber
+					+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
+					+ '</a>) отклонён, причина: <b>пользователь запретил просматривать свои группы</b></span>');
+
+				$object.removeClass('waiting').addClass('rejected');
+			}
+		}
+		);
+	}
+
+	this.apiCall = function (method, data, callback) {
+		if (window.useSDK) {
+			VK.api(method, data, callback);
+		}
+		else {
+			$.get(this.apiVK + method, data, callback, "jsonp");
 		}
 	}
 
@@ -414,9 +428,9 @@ WM.setSlots = function (numberOfSlots) {
 		}
 		$machine.append($('<div>', {class: 'slot-mid'}));
 		slots.push($('<div>', {
-			id:'slot-' + (i - 1),
+			id: 'slot-' + (i - 1),
 			style: 'margin-left:' + ((i - 1) * 156 + 20) + 'px',
-			class:'slot'
+			class: 'slot'
 		}))
 	}
 
