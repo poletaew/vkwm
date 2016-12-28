@@ -330,34 +330,45 @@ var WM = function (data) {
 		}
 
 		$img.after($winnerWaiting);
-console.log('checkWinnerGroup');
+
 		var params = {
-			user_id: 53773684, //id,
+			user_id: id,
 			extended: true
 		},
 			groupsGetCallback = function (data) {
-			console.log('data',data);
+
 				if (data.response && data.response) {
 					var groups = data.response || [];
-console.log('groups of 215829973', groups.length, groups);
+
 					for (var i in groups) {
 						if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
 							foundGroups.push(groups[i].screen_name);
 						}
 					}
-				}
 
-				if (foundGroups.length != neededGroups.length) {
+					if (foundGroups.length != neededGroups.length) {
+						self.setStatus('<span class="red">Победитель # ' + slotNumber
+							+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
+							+ '</a>) отклонён, причина: <b>не в группе</b></span>');
+
+						$winnerWaiting.removeClass('waiting').addClass('rejected');
+					}
+					else {
+						self.setStatus('Победитель # ' + slotNumber + ' состоит в указанной группе');
+						$winnerWaiting.remove();
+						self.setWinner($img, slotNumber);
+					}
+
+				}
+				else if (data.error) {
 					self.setStatus('<span class="red">Победитель # ' + slotNumber
 						+ ' (<a target="_blank" href="' + self.VKdomain + userInfo.uri + '">@' + userInfo.uri
-						+ '</a>) отклонён, причина: <b>не в группе</b></span>');
-					$winnerWaiting.removeClass('waiting').addClass('rejected')
+						+ '</a>) отклонён, причина: <b>пользователь запретил просматривать свои группы</b></span>');
+
+					$winnerWaiting.removeClass('waiting').addClass('rejected');
 				}
-				else {
-					self.setStatus('Победитель # ' + slotNumber + ' состоит в указанной группе');
-					$winnerWaiting.remove();
-					self.setWinner($img, slotNumber);
-				}
+
+
 
 			}
 			;

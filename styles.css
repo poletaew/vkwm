@@ -197,6 +197,11 @@ input[type=checkbox]:checked + label:after {
 .status-text {
 	font-weight: bold;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+
+}
+.status-text > span {
+	max-width: 370px;
+	display: block;
 }
 
 .old-statuses {
