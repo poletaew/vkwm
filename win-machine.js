@@ -332,10 +332,11 @@ var WM = function (data) {
 		$img.after($winnerWaiting);
 console.log('checkWinnerGroup');
 		var params = {
-			user_id: 'skifin', //id,
+			user_id: 53773684, //id,
 			extended: true
 		},
 			groupsGetCallback = function (data) {
+			console.log('data',data);
 				if (data.response && data.response) {
 					var groups = data.response || [];
 console.log('groups of 215829973', groups.length, groups);
