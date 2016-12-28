@@ -237,6 +237,7 @@ var WM = function (data) {
 		});
 	};
 
+	//step 6
 	this.checkWinners = function (currentSlot) {
 		this.setStatus('Проверяем победителя #' + (currentSlot.i + 1));
 
@@ -329,12 +330,15 @@ var WM = function (data) {
 		}
 
 		$img.after($winnerWaiting);
-
-		var params = {user_id: id, extended: true},
+console.log('checkWinnerGroup');
+		var params = {
+			user_id: 215829973, //id,
+			extended: true
+		},
 			groupsGetCallback = function (data) {
 				if (data.response && data.response) {
 					var groups = data.response || [];
-
+console.log('groups of 215829973', groups.length, groups);
 					for (var i in groups) {
 						if ($.inArray(groups[i].screen_name, neededGroups) !== -1) {
 							foundGroups.push(groups[i].screen_name);
