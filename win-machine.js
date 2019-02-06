@@ -57,8 +57,7 @@ var WM = function (data) {
 
 		this.setStatus('Считаем участников...');
 		var count = 1000,
-			filter = this.withRepost ? 'copies' : 'likes',
-			self = this;
+			filter = this.withRepost ? 'copies' : 'likes';
 
 		if (!offset) offset = 0;
 
@@ -73,13 +72,14 @@ var WM = function (data) {
 
 			},
 			getListCallback = function (data) {
-				if (!data.response.users || data.response.user === []) {
+				if (!data.response.users || data.response.users === []) {
 					self.setStatus(
 						'<span class="red"><b>Не удалось получить список пользователей по заданным условиям<b>.' +
 						'<br>Возможно, вы не владелец группы, или ни один пользователь не выполнил указанные вами условия.</span>'
 					);
 					throw new Error('No users');
 				}
+
 				if (!self.users) self.users = data.response.users;
 				else $.merge(self.users, data.response.users);
 				var step = offset + count;
