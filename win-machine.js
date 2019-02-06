@@ -71,6 +71,7 @@ var WM = function (data) {
 
 			},
 			getListCallback = function (data) {
+			console.log('getListCallback data', data);
 				if (!self.users) self.users = data.response.users;
 				else $.merge(self.users, data.response.users);
 				var step = offset + count;
