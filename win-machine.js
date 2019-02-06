@@ -84,7 +84,7 @@ var WM = function (data) {
 				}
 			}
 		;
-
+		console.log('call likes.getList with params', params);
 		this.apiCall("likes.getList", params, getListCallback);
 
 		return this;
