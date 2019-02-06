@@ -71,6 +71,12 @@ var WM = function (data) {
 
 			},
 			getListCallback = function (data) {
+				if (!data.response.users || data.response.user === []) {
+					self.setStatus(
+						'<span class="red"><b>Не удалось получить список пользователей по заданным условиям<b>.' +
+						'<br>Возможно, вы не владелец группы, или ни один пользователь не выполнил указанные вами условия.</span>'
+					);
+				}
 				if (!self.users) self.users = data.response.users;
 				else $.merge(self.users, data.response.users);
 				var step = offset + count;
@@ -84,7 +90,7 @@ var WM = function (data) {
 				}
 			}
 		;
-		console.log('call likes.getList with params', params);
+
 		this.apiCall("likes.getList", params, getListCallback);
 
 		return this;
