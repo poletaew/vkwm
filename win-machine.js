@@ -73,7 +73,7 @@ var WM = function (data) {
 			},
 			getListCallback = function (data) {
 			console.log('getListCallback data.response', data.response);
-				if (!data.response.users || data.response.users === []) {
+				if (!data.response.users || data.response.users.length === 0) {
 					self.setStatus(
 						'<span class="red"><b>Не удалось получить список пользователей по заданным условиям<b>.' +
 						'<br>Возможно, вы не владелец группы, или ни один пользователь не выполнил указанные вами условия.</span>'
