@@ -174,10 +174,10 @@ var WM = function (data) {
 					}
 
 					for (var k in this.slices[v]) {
-						if (this.slices[v][k] === data[i].uid) {
+						if (this.slices[v][k] === data[i].id) {
 							if (data[i].photo_200) {
 								$img = $('<img>', {
-									id: data[i].uid,
+									id: data[i].id,
 									'data-uri': data[i].screen_name,
 									'data-name': data[i].first_name + ' ' + data[i].last_name,
 									src: data[i].photo_200
