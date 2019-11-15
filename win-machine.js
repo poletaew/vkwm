@@ -68,7 +68,8 @@ var WM = function (data) {
 				owner_id: this.ownerId,
 				item_id: this.itemId,
 				count: count,
-				offset: offset
+				offset: offset,
+				extended: true
 
 			},
 			getListCallback = function (data) {
