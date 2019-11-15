@@ -72,7 +72,7 @@ var WM = function (data) {
 
 			},
 			getListCallback = function (data) {
-				if (!data.response.users || data.response.users.length === 0) {
+				if (!data.response.items || data.response.items.length === 0) {
 					self.setStatus(
 						'<span class="red"><b>Не удалось получить список пользователей по заданным условиям<b>.' +
 						'<br>Возможно, вы не владелец группы, или ни один пользователь не выполнил указанные вами условия.</span>'
@@ -80,8 +80,8 @@ var WM = function (data) {
 					throw new Error('No users');
 				}
 
-				if (!self.users) self.users = data.response.users;
-				else $.merge(self.users, data.response.users);
+				if (!self.users) self.users = data.response.items;
+				else $.merge(self.users, data.response.items);
 				var step = offset + count;
 
 				if (!self.totalParticipants) self.totalParticipants = data.response.count;
