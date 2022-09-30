@@ -80,6 +80,8 @@ var WM = function (data) {
 					throw new Error('No users');
 				}
 
+				console.log('[WM] VK Response', data.response);
+
 				if (!self.users) self.users = data.response.items;
 				else $.merge(self.users, data.response.items);
 				var step = offset + count;
