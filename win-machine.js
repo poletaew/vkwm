@@ -86,7 +86,7 @@ var WM = function (data) {
 				else $.merge(self.users, data.response.items);
 				var step = offset + count;
 
-				if (!self.totalParticipants) self.totalParticipants = data.response.count;
+				if (!self.totalParticipants) self.totalParticipants = data.response.items.length;
 
 				if (self.totalParticipants > step) {
 					self.getUsers(step * (Math.PI / 2), callbackFunction);
@@ -482,12 +482,12 @@ var Slot = function (el, max, step) {
 	this.start = function () {
 		this.minTop = -1 * $(this.el).outerHeight(true) + $(this.el).parent().height();
 
+		console.log('[WM] Slot', this)
+
 		$(this.el).css('marginTop', this.minTop);
 		this.isMoving = true;
 
 		this.move();
-
-
 	};
 
 	this.move = function () {
