@@ -212,8 +212,8 @@ var WM = function (data) {
 		$('.slot').each(function () {
 			slots[i] = new Slot(
 				$(this).find('div'),
-				parseInt(Math.random() * 150 + 100),
-				parseInt(Math.random() * 10 + 1)
+				parseInt(Math.random() * 150),
+				parseInt(Math.random() * 10)
 			);
 
 			var currentSlot = slots[i];
