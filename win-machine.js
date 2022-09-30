@@ -207,13 +207,14 @@ var WM = function (data) {
 
 		var slots = [],
 			i = 0,
-			timeout = 0;
+			timeout = 0,
+			step = Math.ceil(Math.random() * 10 + 1);
 
 		$('.slot').each(function () {
 			slots[i] = new Slot(
 				$(this).find('div'),
-				parseInt(Math.random() * 150),
-				parseInt(Math.random() * 10)
+				step * 10,
+				step
 			);
 
 			var currentSlot = slots[i];
