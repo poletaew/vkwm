@@ -482,7 +482,7 @@ var Slot = function (el, max, step) {
 	this.start = function () {
 		this.minTop = -1 * $(this.el).outerHeight(true) + $(this.el).parent().height();
 
-		console.log('[WM] Slot', this)
+		console.log('[WM] Slot', this);
 
 		$(this.el).css('marginTop', this.minTop);
 		this.isMoving = true;
