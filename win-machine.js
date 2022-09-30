@@ -113,6 +113,8 @@ var WM = function (data) {
 		});
 		var ratio = Math.floor(self.users.length / summOfWinners);
 
+		console.log('[WM] Ratio: ', ratio);
+
 		if (ratio > maxRatio) ratio = maxRatio;
 		else if (ratio < 1) ratio = 1;
 
