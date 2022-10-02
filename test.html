@@ -1,0 +1,61 @@
+<!doctype html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.spritely/0.6.8/jquery.spritely.js"></script>
+
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./slot.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.slot-hand', function () {
+                var $hand = $(this);
+
+                $hand.addClass('inverted');
+                setTimeout(function () {
+                    $hand.removeClass('inverted');
+                }, 700);
+
+                let step = Math.ceil(Math.random() * 15 + 1);
+
+                let currentSlot = new Slot(
+                    $('#slot-0 > div'),
+                    Math.random() * 150 + 100,
+                    Math.random() * 10 + 1
+                );
+                currentSlot.i = 0;
+
+                currentSlot.start();
+
+                let timeout = (Math.random() * 5 + 5) * 1000;
+                setTimeout(function () {
+                    console.log('Слот #' + (currentSlot.i + 1) + ' вот-вот остановится...');
+                    currentSlot.stop(function (currentSlot) {
+                        console.log('Slot is stopped');
+                    });
+                }, timeout);
+            });
+        });
+    </script>
+</head>
+<body>
+<div>
+    <div class="win-machine">
+        <div class="slot-left"></div>
+        <div class="slot-mid"></div>
+        <div class="slot-right"></div>
+        <div class="slot-hand"></div>
+        <div id="slot-0" style="margin-left: 20px; height: 260px;" class="slot">
+            <div style="margin-top: -260px;">
+                <img id="38874170" data-uri="id38874170" data-name="Вася Беловъ"
+                     src="https://sun7-6.userapi.com/s/v1/ig2/omMec5tzaUcSVRHO78kdpZoMuPrp4xsJmtXRBdQ9P-TSwIHlEI2bHBnXg3bv433NLI644xMDqs8V0bdFIWwnF7Bq.jpg?size=200x200&amp;quality=95&amp;crop=192,752,1108,1108&amp;ava=1">
+                <img id="15854834" data-uri="aquaside" data-name="Иванъ Мельниковъ"
+                     src="https://sun7-16.userapi.com/s/v1/ig2/IHCNMZLHd-1h6HxM01U3kpjiNIZyc4fCwLoUWMzOBrcCf5U6YVYutOYeDAA8jsm8dl_5hWxS8nhKNqlgSg3ksTiJ.jpg?size=200x200&amp;quality=95&amp;crop=270,116,738,738&amp;ava=1">
+                <img id="24913689" data-uri="telmoran" data-name="Василиса Павлова"
+                     src="https://sun7-6.userapi.com/s/v1/ig2/2wqHXq6HuHrUmI--si2iQA2oBXUDY-WF9qLbWou32RO8Q4qSDZ71IpU2j_mS_3w-0saSie0KAA7fTBUgWkWKNo0j.jpg?size=200x200&amp;quality=95&amp;crop=293,99,432,432&amp;ava=1">
+                <img id="7996152" data-uri="cybronick" data-name="Владиславъ Павловъ"
+                     src="https://sun7-7.userapi.com/s/v1/if1/2ceNeColZjFt6aeZumqWZOJ7b4LW5BpWTNMbjkKobyLeEYkskGdkEt9UmCl9A5uFcZ1pdsbd.jpg?size=200x200&amp;quality=96&amp;crop=160,0,959,959&amp;ava=1">
+            </div>
+        </div>
+    </div>
+</div>
+</body>

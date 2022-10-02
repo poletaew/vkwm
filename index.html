@@ -5,8 +5,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.spritely/0.6.8/jquery.spritely.js"></script>
 
 	<link rel="stylesheet" href="./styles.css">
-	<!--<script src="./slot.js"></script>-->
-	<script src="win-machine.js"></script>
+	<script src="./slot.js"></script>
+	<script src="./win-machine.js"></script>
 	<script>
 		// do main action
 		$(document).ready(function () {
@@ -31,22 +31,6 @@
 
 				}
 			});
-
-			/*
-			 $('.cloneParentFormGroup').click(function () {
-			 var $parent = $(this).parents('.form-group');
-			 $parent.after($parent.clone(true));
-			 });
-
-			 $('.removeAdditionalGroup').click(function () {
-			 var $parent = $(this).parents('.additional-group-form');
-
-			 if ($('.additional-group-form').length > 1) $parent.remove();
-			 else {
-			 $('input[name=additional-groups]').click();
-			 }
-			 });
-			 */
 
 			$('#count-prizes').change(function () {
 				var val = $(this).val(),
