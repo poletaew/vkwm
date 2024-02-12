@@ -291,7 +291,8 @@ const WM = function (data) {
 					+ ' (<b><a target="_blank" href="' + self.VKdomain + data.uri + '">' + data.name + '</a></b>)</div>'
 				)
 			});
-		} else {
+		}
+		else {
 			this.finalTimer = setTimeout(function () {
 				self.showFinalInfo();
 			}, 700);
@@ -299,9 +300,8 @@ const WM = function (data) {
 	}
 
 	this.checkWinnerGroup = function ($img, slotNumber) {
-		var $winnerWaiting = $('<div>').addClass('winner waiting'),
-			neededGroups = []
-		;
+		const $winnerWaiting = $('<div>').addClass('winner waiting'),
+			neededGroups = [];
 
 		for (var i in this.otherGroups) {
 			var tmp = this.otherGroups[i].match(/vk.com\/([^?]+)\??.*$/);
