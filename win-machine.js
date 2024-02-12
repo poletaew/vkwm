@@ -5,7 +5,7 @@ const WM = function (data) {
 	this.link;
 	this.additionalGroups;
 	this.withRepost;
-	this.countPrizes;
+	this.countPrizes = 0;
 
 	this.postId;
 	this.ownerId;
@@ -15,7 +15,6 @@ const WM = function (data) {
 	this.users = [];
 	this.slices = [];
 	this.otherGroups = [];
-	this.countWinners = [];
 	this.slots = [];
 	this.slotHeight = 260;
 	this.paylinePosition = 150;
@@ -23,17 +22,17 @@ const WM = function (data) {
 	const self = this;
 
 	this.construct = function (data) {
+		console.log('construct', data);
 		this.link = data.link;
 
 		this.additionalGroups = (data['additional-groups'] === 'on');
 		this.withRepost = (data['with-repost'] === 'on');
 		this.countPrizes = parseInt(data['count-prizes']);
-		this.countWinners = $.isArray(data['count-winners']) ? data['count-winners'] : [data['count-winners']];
 		if (data['other-group']) {
 			this.otherGroups = $.isArray(data['other-group']) ? data['other-group'] : [data['other-group']];
 		}
 
-		let res = this.link.match(/wall((\-?\d+)_(\d+))/i);
+		let res = this.link.match(/wall((-?\d+)_(\d+))/i);
 		if (res === null) {
 			alert('Неверная ссылка на конкурсный пост!');
 			throw new Error('Bad link');
@@ -104,25 +103,18 @@ const WM = function (data) {
 	this.getSlices = function (self) {
 		self.setStatus('Участников: <b>' + self.totalParticipants + '</b>. Делаем рандомные выборки из общего числа...');
 
-		let key = 0,
-			sumOfWinners = 0,
-			maxRatio = 50;
-
-		//calc slice ratio
-		$.each(self.countWinners, function () {
-			sumOfWinners += parseInt(this);
-		});
+		const maxWinnerPerPrize = 50;
 
 		console.log('[WM] Users: ', self.users);
 
 		for (let i = 0; i < self.countPrizes; i++) {
-			let ratio = Math.round(self.users.length / sumOfWinners);
+			let NumberOfWinnersPerPrize = Math.round(self.users.length / (self.countPrizes - i + 1));
 			console.log(`[WM] Ratio [${i}] `, self.users);
-			if (ratio > maxRatio) ratio = maxRatio;
-			else if (ratio < 1) ratio = 1;
+			if (NumberOfWinnersPerPrize > maxWinnerPerPrize) NumberOfWinnersPerPrize = maxWinnerPerPrize;
+			else if (NumberOfWinnersPerPrize < 1) NumberOfWinnersPerPrize = 1;
 
-			for (let j = 0; j < self.countWinners[i] * ratio; j++) {
-				key = Math.random() * self.users.length - 1;
+			for (let j = 0; j < NumberOfWinnersPerPrize; j++) {
+				let key = Math.random() * self.users.length - 1;
 				if (!self.slices[i]) self.slices[i] = [];
 
 				self.slices[i].push(self.users[key]);
@@ -170,7 +162,7 @@ const WM = function (data) {
 							});
 						}
 
-						this.slots[v].outerHeight(this.countWinners[v] * this.slotHeight).addClass('hidden');
+						this.slots[v].outerHeight(this.slotHeight).addClass('hidden');
 
 						this.slots[v].append('<div>');
 						$target.append(this.slots[v]);
@@ -281,22 +273,18 @@ const WM = function (data) {
 			clearTimeout(this.finalTimer);
 		}
 
-		let $winners = $('.win-machine').find('.winner').not('.waiting').not('.rejected'),
-			totalWinners = 0;
+		let $winners = $('.win-machine').find('.winner').not('.waiting').not('.rejected');
 
-		for (const i in this.countWinners) {
-			totalWinners += parseInt(this.countWinners[i]);
-		}
 
-		if (totalWinners === $winners.length) {
-			var $infoDiv = $('<div>');
+		if (this.countPrizes === $winners.length) {
+			const $infoDiv = $('<div>');
 
-			this.setStatus('<span class="green">Поздравляем победител' + (totalWinners === 1 ? 'я' : 'ей') + '!</span>');
+			this.setStatus('<span class="green">Поздравляем победител' + (this.countPrizes === 1 ? 'я' : 'ей') + '!</span>');
 
 			$('.old-statuses').prepend([$infoDiv, '<br>']);
 
 			$winners.each(function (i) {
-				var data = $(this).prev('img').data();
+				const data = $(this).prev('img').data();
 
 				$infoDiv.append(
 					'<div>Победитель # ' + (i + 1) + ': @' + data.uri

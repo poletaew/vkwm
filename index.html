@@ -46,8 +46,6 @@
 					$(this).val(val);
 				}
 
-				$('form.settings').find('.count-winners').remove();
-
 				/**
 				 * в данной версии доступен только один победитель для каждого приза (слота)
 				 * в расширенной версии можно будет выбирать несколько победителей для каждого приза
@@ -55,17 +53,6 @@
 
 
 				WM.setSlots(val);
-
-				for (var i = 1; i <= val; i++) {
-					$('form.settings').append($('<input>',
-						{
-							type: 'hidden',
-							name: 'count-winners',
-							class: 'count-winners',
-							value: 1
-						}
-					));
-				}
 			});
 
 			$(document).on('click', '.slot-hand', function () {
@@ -151,10 +138,7 @@
 				<div class="input">
 					<input class="other-group" name="other-group" type="text" placeholder="Ссылка на группу">
 				</div>
-				<!--<input type="button" class="cloneParentFormGroup" value="Добавить еще одну">
-				<input type="button" class="removeAdditionalGroup" value="Удалить">-->
 			</div>
-			<input type="hidden" name="count-winners" class="count-winners" value="1">
 		</form>
 		<div class="info hidden">
 			<div class="close"></div>
