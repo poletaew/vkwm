@@ -109,7 +109,6 @@ const WM = function (data) {
 
 		for (let i = 0; i < self.countPrizes; i++) {
 			let NumberOfWinnersPerPrize = Math.ceil(self.users.length / (self.countPrizes - i));
-			console.log(`[WM] Prize #${i} winners`, NumberOfWinnersPerPrize, self.users);
 			if (NumberOfWinnersPerPrize > maxWinnerPerPrize) NumberOfWinnersPerPrize = maxWinnerPerPrize;
 			else if (NumberOfWinnersPerPrize < 1) NumberOfWinnersPerPrize = 1;
 
@@ -120,6 +119,7 @@ const WM = function (data) {
 				self.slices[i].push(self.users[key]);
 				self.users.splice(key, 1);
 			}
+			console.log(`[WM] Prize #${i} winners`, self.slices[i]);
 		}
 
 		//next step
@@ -162,7 +162,7 @@ const WM = function (data) {
 							});
 						}
 
-						this.slots[v].outerHeight(this.slotHeight).addClass('hidden');
+						this.slots[v].outerHeight(this.slices[v].length * this.slotHeight).addClass('hidden');
 
 						this.slots[v].append('<div>');
 						$target.append(this.slots[v]);
