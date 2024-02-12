@@ -109,7 +109,7 @@ const WM = function (data) {
 
 		for (let i = 0; i < self.countPrizes; i++) {
 			let NumberOfWinnersPerPrize = Math.round(self.users.length / (self.countPrizes - i + 1));
-			console.log(`[WM] Ratio [${i}] `, self.users);
+			console.log(`[WM] Prize #${i} winners`, NumberOfWinnersPerPrize, self.users);
 			if (NumberOfWinnersPerPrize > maxWinnerPerPrize) NumberOfWinnersPerPrize = maxWinnerPerPrize;
 			else if (NumberOfWinnersPerPrize < 1) NumberOfWinnersPerPrize = 1;
 
