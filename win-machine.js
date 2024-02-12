@@ -117,8 +117,8 @@ const WM = function (data) {
 				console.log('Key: ', key, self.users);
 				if (!self.slices[i]) self.slices[i] = [];
 
-				self.slices[i].push(self.users[key]);
-				self.users.splice(key, 1);
+				const picked = self.users.splice(key, 1);
+				$.merge(self.slices[i], picked);
 			}
 			console.log(`[WM] Prize #${i} winners`, self.slices[i]);
 		}
