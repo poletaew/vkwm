@@ -20,7 +20,7 @@ const WM = function (data) {
 	this.slotHeight = 260;
 	this.paylinePosition = 150;
 
-	var self = this;
+	const self = this;
 
 	this.construct = function (data) {
 		this.link = data.link;
@@ -55,12 +55,12 @@ const WM = function (data) {
 	this.getUsers = function (offset, callbackFunction) {
 
 		this.setStatus('Считаем участников...');
-		var count = 1000,
+		const count = 1000,
 			filter = this.withRepost ? 'copies' : 'likes';
 
 		if (!offset) offset = 0;
 
-		var params = {
+		const params = {
 				type: "post",
 				skip_own: true,
 				filter: filter,
@@ -83,7 +83,7 @@ const WM = function (data) {
 
 				if (!self.users) self.users = data.response.items;
 				else $.merge(self.users, data.response.items);
-				var step = offset + count;
+				const step = offset + count;
 
 				if (!self.totalParticipants) self.totalParticipants = data.response.items.length;
 
@@ -104,25 +104,25 @@ const WM = function (data) {
 	this.getSlices = function (self) {
 		self.setStatus('Участников: <b>' + self.totalParticipants + '</b>. Делаем рандомные выборки из общего числа...');
 
-		var key = 0,
-			summOfWinners = 0,
+		let key = 0,
+			sumOfWinners = 0,
 			maxRatio = 50;
 
 		//calc slice ratio
 		$.each(self.countWinners, function () {
-			summOfWinners += parseInt(this);
+			sumOfWinners += parseInt(this);
 		});
-		var ratio = Math.floor(self.users.length / summOfWinners);
 
 		console.log('[WM] Users: ', self.users);
-		console.log('[WM] Ratio: ', ratio);
 
-		if (ratio > maxRatio) ratio = maxRatio;
-		else if (ratio < 1) ratio = 1;
+		for (let i = 0; i < self.countPrizes; i++) {
+			let ratio = Math.round(self.users.length / sumOfWinners);
+			console.log(`[WM] Ratio [${i}] `, self.users);
+			if (ratio > maxRatio) ratio = maxRatio;
+			else if (ratio < 1) ratio = 1;
 
-		for (var i = 0; i < self.countPrizes; i++) {
-			for (var j = 0; j < self.countWinners[i] * ratio; j++) {
-				key = parseInt(Math.random() * self.users.length - 1);
+			for (let j = 0; j < self.countWinners[i] * ratio; j++) {
+				key = Math.random() * self.users.length - 1;
 				if (!self.slices[i]) self.slices[i] = [];
 
 				self.slices[i].push(self.users[key]);
@@ -136,7 +136,7 @@ const WM = function (data) {
 
 	//step 3
 	this.getUsersInfo = function (self) {
-		var ids = [];
+		const ids = [];
 
 		$.each(self.slices, function () {
 			$.merge(ids, this);
@@ -154,12 +154,12 @@ const WM = function (data) {
 	//step 4
 	this.updateSlices = function (data) {
 		this.setStatus('Загружаем барабаны...');
-		var $img,
+		let $img,
 			$target = $('.win-machine');
 
 		slicesIteration:
-			for (var i in data) {
-				for (var v in this.slices) {
+			for (const i in data) {
+				for (const v in this.slices) {
 					if (!this.slots[v]) {
 						this.slots[v] = $('div#' + 'slot-' + v);
 
@@ -170,14 +170,13 @@ const WM = function (data) {
 							});
 						}
 
-						this.slots[v].outerHeight(this.countWinners[v] * this.slotHeight)
-							.addClass('hidden');
+						this.slots[v].outerHeight(this.countWinners[v] * this.slotHeight).addClass('hidden');
 
 						this.slots[v].append('<div>');
 						$target.append(this.slots[v]);
 					}
 
-					for (var k in this.slices[v]) {
+					for (const k in this.slices[v]) {
 						if (this.slices[v][k] === data[i].id) {
 							if (data[i].photo_200) {
 								$img = $('<img>', {
@@ -282,10 +281,10 @@ const WM = function (data) {
 			clearTimeout(this.finalTimer);
 		}
 
-		var $winners = $('.win-machine').find('.winner').not('.waiting').not('.rejected'),
+		let $winners = $('.win-machine').find('.winner').not('.waiting').not('.rejected'),
 			totalWinners = 0;
 
-		for (var i in this.countWinners) {
+		for (const i in this.countWinners) {
 			totalWinners += parseInt(this.countWinners[i]);
 		}
 
