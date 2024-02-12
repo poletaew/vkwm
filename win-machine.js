@@ -108,7 +108,7 @@ const WM = function (data) {
 		console.log('[WM] Users: ', self.users);
 
 		for (let i = 0; i < self.countPrizes; i++) {
-			let NumberOfWinnersPerPrize = Math.ceil(self.users.length / (self.countPrizes - i + 1));
+			let NumberOfWinnersPerPrize = Math.ceil(self.users.length / (self.countPrizes - i));
 			console.log(`[WM] Prize #${i} winners`, NumberOfWinnersPerPrize, self.users);
 			if (NumberOfWinnersPerPrize > maxWinnerPerPrize) NumberOfWinnersPerPrize = maxWinnerPerPrize;
 			else if (NumberOfWinnersPerPrize < 1) NumberOfWinnersPerPrize = 1;
