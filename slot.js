@@ -66,12 +66,10 @@ const Slot = function (el, max, step) {
             return;
         }
 
-        var $el = $(this.el),
+        let $el = $(this.el),
             marginTop = this.correctMarginTop(this.speed + parseInt($el.css('margin-top'))),
             remainder = marginTop % 6;
         if (remainder) marginTop -= remainder;
-
-        console.log('this.slow marginTop', marginTop);
 
         $el.animate({marginTop: marginTop}, 90, function () {
             setTimeout(function () {
