@@ -114,6 +114,7 @@ const WM = function (data) {
 
 			for (let j = 0; j < NumberOfWinnersPerPrize; j++) {
 				let key = Math.random() * self.users.length - 1;
+				console.log('Key: ', key, self.users);
 				if (!self.slices[i]) self.slices[i] = [];
 
 				self.slices[i].push(self.users[key]);
@@ -162,7 +163,7 @@ const WM = function (data) {
 							});
 						}
 
-						this.slots[v].outerHeight(this.slices[v].length * this.slotHeight).addClass('hidden');
+						this.slots[v].outerHeight(this.slotHeight).addClass('hidden');
 
 						this.slots[v].append('<div>');
 						$target.append(this.slots[v]);
