@@ -118,7 +118,7 @@ input[type=number]::-webkit-outer-spin-button {
 	position: absolute;
 	opacity: 0.3;
 	filter: grayscale(1) hue-rotate(170deg) saturate(3) brightness(1.1);
-	background: url(https://vk.com/images/post_icon.png) no-repeat 0 1px;
+	background: url(https://vk.ru/images/post_icon.png) no-repeat 0 1px;
 	background-size: cover;
 }
 
@@ -141,7 +141,7 @@ input[type=checkbox]:checked + label:after {
 }
 
 .checkbox > label[for=additional-groups]:after {
-	background: url("https://vk.com/images/icons/menu_icon.png") no-repeat -4px -197px;
+	background: url("https://vk.ru/images/icons/menu_icon.png") no-repeat -4px -197px;
 	background-size: cover;
 }
 

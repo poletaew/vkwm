@@ -1,6 +1,6 @@
 const WM = function (data) {
-	this.VKdomain = 'https://vk.com/';
-	this.apiVK = "https://api.vk.com/method/";
+	this.VKdomain = 'https://vk.ru/';
+	this.apiVK = "https://api.vk.ru/method/";
 
 	this.link;
 	this.additionalGroups;
@@ -305,7 +305,7 @@ const WM = function (data) {
 			neededGroups = [];
 
 		for (var i in this.otherGroups) {
-			var tmp = this.otherGroups[i].match(/vk.com\/([^?]+)\??.*$/);
+			var tmp = this.otherGroups[i].match(/vk.ru\/([^?]+)\??.*$/);
 			neededGroups.push(tmp[1]);
 		}
 
