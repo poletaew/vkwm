@@ -306,7 +306,7 @@ const WM = function (data) {
 
 		for (var i in this.otherGroups) {
 			var tmp = this.otherGroups[i].match(/vk.(com|ru)\/([^?]+)\??.*$/);
-			neededGroups.push(tmp[1]);
+			neededGroups.push(tmp[2]);
 		}
 
 		$img.after($winnerWaiting);
