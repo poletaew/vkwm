@@ -305,7 +305,7 @@ const WM = function (data) {
 			neededGroups = [];
 
 		for (var i in this.otherGroups) {
-			var tmp = this.otherGroups[i].match(/vk.ru\/([^?]+)\??.*$/);
+			var tmp = this.otherGroups[i].match(/vk.(com|ru)\/([^?]+)\??.*$/);
 			neededGroups.push(tmp[1]);
 		}
 
